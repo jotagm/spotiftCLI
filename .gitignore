@@ -33,7 +33,7 @@ vendor/
 Thumbs.db
 
 # Build output
-spotify
-spotify.exe
+/spotify
+/spotify.exe
 dist/
 build/
