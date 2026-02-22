@@ -16,7 +16,6 @@ type Config struct {
 
 // Load reads configuration from environment variables
 func Load() *Config {
-	// Load .env file if it exists
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found, using system environment variables")
 	}

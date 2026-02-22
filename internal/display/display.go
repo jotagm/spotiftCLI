@@ -4,9 +4,20 @@ import (
 	"fmt"
 	"strings"
 	"time"
-
-	"cli_spotify/internal/client"
 )
+
+// Track represents a track for display purposes
+type Track struct {
+	Name      string
+	Artist    string
+	Album     string
+	Duration  time.Duration
+	Progress  time.Duration
+	IsPlaying bool
+	Shuffle   bool
+	Repeat    string
+	ImageURL  string
+}
 
 const (
 	ColorReset  = "\033[0m"
@@ -54,7 +65,7 @@ func TruncateString(s string, maxLen int) string {
 }
 
 // DisplayCurrentTrack displays the currently playing track with a nice UI
-func DisplayCurrentTrack(track client.Track) {
+func DisplayCurrentTrack(track Track) {
 	// Clear screen and move cursor to top
 	fmt.Print("\033[2J\033[H")
 

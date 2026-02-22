@@ -83,6 +83,27 @@ Then run it:
 - Go 1.25 or higher
 - Active Spotify Premium or Free account
 - Internet connection
+
+## Example Usage
+
+```go
+// Create managers
+dm := devices.NewDeviceManager(client)
+pc := playback.NewPlaybackController(client)
+
+// Ensure active device
+device, _ := dm.EnsureActiveDevice()
+
+// Control playback
+pc.Play()
+pc.Next()
+pc.SetVolume(70)
+pc.SetShuffle(true)
+
+// Play specific track
+pc.PlayTrack("spotify:track:...", device.ID)
+```
+
 #   s p o t i f y - C L I 
  
  #   s p o t i f t C L I 
