@@ -125,13 +125,13 @@ func DisplayCurrentTrack(track Track) {
 		repeatIcon = "🔁"
 	}
 
-	fmt.Printf("  %s%s %s%s   %s%s   %s%s\n",
+	fmt.Printf("  %s%s %s%s   %s%s%s   %s%s%s\n",
 		ColorGreen, statusIcon, statusText, ColorReset,
 		ColorYellow, shuffleIcon, ColorReset,
 		ColorYellow, repeatIcon, ColorReset,
 	)
 
 	fmt.Println()
-	fmt.Println(ColorGray + "  Press Ctrl+C to exit" + ColorReset)
+	fmt.Println(ColorGray + "  [Space] play/pause  [←→] prev/next  [↑↓] volume  [s] shuffle  [r] repeat  [q] quit" + ColorReset)
 	fmt.Println()
 }
