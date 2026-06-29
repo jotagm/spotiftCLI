@@ -87,6 +87,28 @@ func (c *Client) Seek(ms int) error {
 	})
 }
 
+// Play starts playback of a Spotify URI (track, album, playlist, or artist) via
+// POST /player/play. skipToURI optionally selects a track within a context
+// (playlist/album); pass "" to start from the beginning.
+func (c *Client) Play(uri, skipToURI string, paused bool) error {
+	body := map[string]any{
+		"uri":    uri,
+		"paused": paused,
+	}
+	if skipToURI != "" {
+		body["skip_to_uri"] = skipToURI
+	}
+	return c.postJSON("/player/play", body)
+}
+
+// AddToQueue appends a track URI to the playback queue via POST
+// /player/add_to_queue.
+func (c *Client) AddToQueue(uri string) error {
+	return c.postJSON("/player/add_to_queue", map[string]any{
+		"uri": uri,
+	})
+}
+
 // SetShuffle enables or disables shuffle via POST /player/shuffle_context.
 func (c *Client) SetShuffle(on bool) error {
 	return c.postJSON("/player/shuffle_context", map[string]any{

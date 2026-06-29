@@ -12,19 +12,35 @@ import (
 	"runtime"
 )
 
+// binaryName is the go-librespot executable name, with a .exe suffix on Windows.
+func binaryName() string {
+	if runtime.GOOS == "windows" {
+		return "go-librespot.exe"
+	}
+	return "go-librespot"
+}
+
 // BinaryPath returns the path where the go-librespot binary is stored.
 func BinaryPath() (string, error) {
 	dir, err := configDir()
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(dir, "bin", "go-librespot"), nil
+	return filepath.Join(dir, "bin", binaryName()), nil
 }
 
-// EnsureBinary checks if the binary exists; if not, downloads it.
-func EnsureBinary() (string, error) {
-	if runtime.GOOS != "linux" {
-		return "", fmt.Errorf("go-librespot is only available for Linux (current OS: %s)", runtime.GOOS)
+// EnsureBinary returns a usable go-librespot binary path.
+//
+// If override is non-empty it is used directly (the escape hatch for platforms
+// without an official release). Otherwise, on Linux, the binary is downloaded
+// to ~/.spotify-cli/bin if not already present. On other platforms there is no
+// prebuilt binary to download, so an actionable error is returned.
+func EnsureBinary(override string) (string, error) {
+	if override != "" {
+		if _, err := os.Stat(override); err != nil {
+			return "", fmt.Errorf("SPOTIFY_LIBRESPOT_PATH %q is not accessible: %w", override, err)
+		}
+		return override, nil
 	}
 
 	binPath, err := BinaryPath()
@@ -32,8 +48,17 @@ func EnsureBinary() (string, error) {
 		return "", err
 	}
 
+	// A previously installed/built binary at the default location works anywhere.
 	if _, err := os.Stat(binPath); err == nil {
 		return binPath, nil
+	}
+
+	if runtime.GOOS != "linux" {
+		return "", fmt.Errorf(
+			"go-librespot has no official %s/%s release to download.\n"+
+				"  On Windows, run this CLI inside WSL, or build go-librespot yourself\n"+
+				"  and point SPOTIFY_LIBRESPOT_PATH at the resulting binary.",
+			runtime.GOOS, runtime.GOARCH)
 	}
 
 	fmt.Print("[i] go-librespot not found. Fetching latest release info...\n")

@@ -38,17 +38,22 @@ func WriteConfig(deviceName string, port int) error {
 	audioBackend := detectAudioBackend()
 
 	cfgPath := filepath.Join(dir, "config.yml")
+	// Interactive credentials: go-librespot logs in to the user's account over an
+	// outbound connection after a one-time browser authorization. This avoids
+	// mDNS/zeroconf discovery, which does not work reliably across WSL's NAT.
+	// log_level is "info" so the authentication link is printed to stdout.
 	content := fmt.Sprintf(`device_name: %q
 device_type: computer
 audio_backend: %s
+zeroconf_enabled: false
 credentials:
-  type: zeroconf
+  type: interactive
 server:
   enabled: true
   address: localhost
   port: %d
 volume_steps: 100
-log_level: warn
+log_level: info
 `, deviceName, audioBackend, port)
 
 	return os.WriteFile(cfgPath, []byte(content), 0644)

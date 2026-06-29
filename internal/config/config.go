@@ -10,14 +10,21 @@ import (
 
 // Config holds application configuration.
 type Config struct {
-	// Legacy Spotify Web API fields (kept for .env compatibility)
-	ClientID     string
-	ClientSecret string
-	RedirectURI  string
-
 	// go-librespot daemon settings
 	DeviceName string
 	DaemonPort int
+
+	// LibrespotPath is an optional path to a pre-installed go-librespot binary.
+	// When set, the daemon uses it instead of downloading one. This is the only
+	// way to run on platforms without an official go-librespot release (Windows,
+	// macOS) — build go-librespot yourself and point this at it.
+	LibrespotPath string
+
+	// Spotify Web API (used for search and library/playlist browsing). Auth uses
+	// the Authorization Code flow with PKCE, so only the Client ID is required —
+	// the Client Secret is not used.
+	ClientID    string
+	RedirectURI string
 }
 
 // Load reads configuration from the .env file or system environment variables.
@@ -38,11 +45,16 @@ func Load() *Config {
 		deviceName = "Spotify CLI"
 	}
 
+	redirectURI := os.Getenv("SPOTIFY_REDIRECT_URI")
+	if redirectURI == "" {
+		redirectURI = "http://127.0.0.1:8080/callback"
+	}
+
 	return &Config{
-		ClientID:     os.Getenv("SPOTIFY_CLIENT_ID"),
-		ClientSecret: os.Getenv("SPOTIFY_CLIENT_SECRET"),
-		RedirectURI:  os.Getenv("SPOTIFY_REDIRECT_URI"),
-		DeviceName:   deviceName,
-		DaemonPort:   port,
+		DeviceName:    deviceName,
+		DaemonPort:    port,
+		LibrespotPath: os.Getenv("SPOTIFY_LIBRESPOT_PATH"),
+		ClientID:      os.Getenv("SPOTIFY_CLIENT_ID"),
+		RedirectURI:   redirectURI,
 	}
 }
